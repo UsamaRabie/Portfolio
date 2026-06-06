@@ -1,0 +1,307 @@
+{
+  "personal": {
+    "name": "Usama Rabie",
+    "title": "MERN Stack Developer & Web Developer",
+    "subtitle": [
+      "Software Engineer",
+      "MERN Stack Developer",
+      "Web Developer"
+    ],
+    "email": "usamarabie21@gmail.com",
+    "phone": "+021099763724",
+    "location": "Cairo EG",
+    "birthday": "15 Dec 2000",
+    "degree": "Student",
+    "freelance": "Available",
+    "bio": "I am a MERN Stack developer with experience in building full-stack web applications using MongoDB, Express.js, React, and Node.js. I have made several projects, including a food order app with Next.js and Redux toolkit, and an e-commerce app with React JS.",
+    "profileImage": "https://res.cloudinary.com/dlmuy21ih/image/upload/v1780764922/uluho20p3htpldvbvtfx.jpg",
+    "cvUrl": "https://drive.google.com/file/d/1K1j1-vm_6ziGAzr_5TgWKomr0sVyxFGc/view?usp=sharing"
+  },
+  "social": [
+    {
+      "platform": "GitHub",
+      "url": "https://github.com/UsamaRabie",
+      "icon": "github"
+    },
+    {
+      "platform": "LinkedIn",
+      "url": "https://www.linkedin.com/in/usama-rabie-9881b1201",
+      "icon": "linkedin"
+    },
+    {
+      "platform": "Codeforces",
+      "url": "https://codeforces.com/profile/Usama_Rabie",
+      "icon": "codeforces"
+    }
+  ],
+  "activities": [
+    "Instructor in ICPC Minya september 2022 – september 2023",
+    "Vice HR in ICPC Minya september 2022 – september 2023",
+    "HR member, IEEE Minya student branch 2021 - 2022",
+    "Mentor in ICPC Minya 2021 – 2022 (train students in problem solving)"
+  ],
+  "facts": [
+    {
+      "icon": "code",
+      "value": "10k+",
+      "label": "Line of Code"
+    },
+    {
+      "icon": "folder",
+      "value": "8+",
+      "label": "Educational Projects"
+    },
+    {
+      "icon": "brain",
+      "value": "500+",
+      "label": "Solved Problems"
+    },
+    {
+      "icon": "users",
+      "value": "50+",
+      "label": "Students Mentored"
+    }
+  ],
+  "skills": [
+    {
+      "name": "MongoDB",
+      "level": 0,
+      "category": "mern"
+    },
+    {
+      "name": "Express.js",
+      "level": 0,
+      "category": "mern"
+    },
+    {
+      "name": "React",
+      "level": 0,
+      "category": "mern"
+    },
+    {
+      "name": "Node.js",
+      "level": 0,
+      "category": "mern"
+    },
+    {
+      "name": "C/C++",
+      "level": 0,
+      "category": "programming"
+    },
+    {
+      "name": "Data Structure & Algorithms",
+      "level": 0,
+      "category": "programming"
+    },
+    {
+      "name": "Problem Solving",
+      "level": 0,
+      "category": "programming"
+    },
+    {
+      "name": "OOP",
+      "level": 0,
+      "category": "programming"
+    },
+    {
+      "name": "STLs",
+      "level": 0,
+      "category": "programming"
+    },
+    {
+      "name": "HTML",
+      "level": 0,
+      "category": "frontend"
+    },
+    {
+      "name": "CSS",
+      "level": 0,
+      "category": "frontend"
+    },
+    {
+      "name": "JavaScript",
+      "level": 0,
+      "category": "frontend"
+    },
+    {
+      "name": "ES6",
+      "level": 0,
+      "category": "frontend"
+    },
+    {
+      "name": "Tailwind CSS",
+      "level": 0,
+      "category": "frontend"
+    },
+    {
+      "name": "Material-UI (MUI)",
+      "level": 0,
+      "category": "frontend"
+    },
+    {
+      "name": "Bootstrap",
+      "level": 0,
+      "category": "frontend"
+    },
+    {
+      "name": "SCSS",
+      "level": 0,
+      "category": "frontend"
+    },
+    {
+      "name": "Next.js",
+      "level": 0,
+      "category": "frontend"
+    },
+    {
+      "name": "Redux Toolkit",
+      "level": 0,
+      "category": "frontend"
+    },
+    {
+      "name": "SQL",
+      "level": 0,
+      "category": "backend"
+    }
+  ],
+  "resume": {
+    "summary": {
+      "title": "Professional Summary",
+      "items": [
+        "Student at Faculty of Engineering Minya University, Computer Engineering and Systems Section",
+        "Seeking a position as highly effective member in this great organization, where I can improve my knowledge, experience, and acquire new skills"
+      ]
+    },
+    "education": {
+      "title": "Education & Activities",
+      "items": [
+        {
+          "period": "2019 - 2024",
+          "institution": "Faculty of Engineering - Computer and Systems Section",
+          "description": [
+            "Bachelor degree in Computer Engineering"
+          ]
+        },
+        {
+          "period": "2019 - 2024",
+          "institution": "Activities",
+          "description": [
+            "Instructor in ICPC Minya september 2022 – september 2023 - Train students to solve problems quickly and efficiently",
+            "Vice HR in ICPC Minya september 2022 – september 2023 - Do interviews with mentors to determine if they will join our team or not depending on their Capabilities",
+            "HR member, IEEE Minya student branch 2021 - 2022 - Do interviews with students who want to join the IEEE team",
+            "Mentor in ICPC Minya 2021 – 2022 - Train students in problem-solving",
+            "ECPC Contest 2022 - Participant in the contest"
+          ]
+        }
+      ]
+    },
+    "experience": {
+      "title": "Professional Experience",
+      "items": [
+        {
+          "period": "2023 - Present",
+          "institution": "Software Engineer at instaTech",
+          "description": [
+            "Developed responsive and interactive web applications that met client requirements and adhered to industry standards",
+            "Worked closely with back-end developers to integrate APIs and data sources into front-end applications"
+          ]
+        },
+        {
+          "period": "2022",
+          "institution": "Internship in elmawkaa-الموقع",
+          "description": [
+            "The internship provided me with hands-on experience in designing, developing, and implementing web applications using various front-end technologies and the React framework"
+          ]
+        },
+        {
+          "period": "2019 - 2024",
+          "institution": "Training & Courses",
+          "description": [
+            "C, C++, OOP, Data structure & algorithms, STLs, Problem-solving, SQL",
+            "HTML5, CSS3, Bootstrap5, SASS, JS, ES6, React, Material-UI, Tailwind CSS, Redux Toolkit, Next.js",
+            "System Administration Red hat (ITI - Training)"
+          ]
+        }
+      ]
+    }
+  },
+  "projects": [
+    {
+      "id": "food-order",
+      "title": "Food Order App",
+      "description": "Food order app with next.js and tailwind css",
+      "image": "/images/food-app.jpg",
+      "category": "web",
+      "demoUrl": "https://food-order-app-virid-rho.vercel.app/",
+      "githubUrl": "#"
+    },
+    {
+      "id": "ecommerce",
+      "title": "E-Commerce App",
+      "description": "E-commerce app with react and MUI",
+      "image": "/images/ecommerce.jpg",
+      "category": "web",
+      "demoUrl": "https://e-commerce-7ac98.web.app/",
+      "githubUrl": "#"
+    },
+    {
+      "id": "instatech",
+      "title": "InstaTech",
+      "description": "Website InstaTech that shows team skills and Services",
+      "image": "/images/instatech.jpg",
+      "category": "web",
+      "demoUrl": "https://instatech36.github.io/",
+      "githubUrl": "#"
+    },
+    {
+      "id": "social-media",
+      "title": "Social Media App",
+      "description": "Social Media App Only UI design using MUI",
+      "image": "/images/social-media.jpg",
+      "category": "web",
+      "demoUrl": "https://ubiquitous-pithivier-a40e60.netlify.app/",
+      "githubUrl": "#"
+    },
+    {
+      "id": "movie-app",
+      "title": "Movie App",
+      "description": "Movie App project for training using API with react",
+      "image": "/images/movie-app.jpg",
+      "category": "web",
+      "demoUrl": "https://splendorous-medovik-24c858.netlify.app/",
+      "githubUrl": "#"
+    },
+    {
+      "id": "cart-app",
+      "title": "Cart App",
+      "description": "Cart project for training in redux toolkit",
+      "image": "/images/cart-app.jpg",
+      "category": "web",
+      "demoUrl": "https://main--tranquil-profiterole-9852d2.netlify.app/",
+      "githubUrl": "#"
+    },
+    {
+      "id": "product-management",
+      "title": "Product Management System",
+      "description": "Product Management System using JS",
+      "image": "/images/product-management.jpg",
+      "category": "web",
+      "demoUrl": "https://usamarabie.github.io/Product-management-system/",
+      "githubUrl": "#"
+    },
+    {
+      "id": "bootstrap-market",
+      "title": "Bootstrap Market",
+      "description": "Simple Bootstrap Project",
+      "image": "/images/bootstrap-market.jpg",
+      "category": "web",
+      "demoUrl": "https://usamarabie.github.io/Bootstrap_Market/",
+      "githubUrl": "#"
+    }
+  ],
+  "contact": {
+    "email": "usamarabie21@gmail.com",
+    "phone": "+021099763724",
+    "location": "Cairo"
+  }
+}
