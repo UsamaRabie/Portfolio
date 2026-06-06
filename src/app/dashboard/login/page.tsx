@@ -15,23 +15,15 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    try {
-      const res = await fetch("/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      });
-
-      if (res.ok) {
+    setTimeout(() => {
+      if (password === "rsmuf72101512") {
         localStorage.setItem("dashboard_auth", "authenticated");
         router.push("/dashboard");
       } else {
         setError("Invalid password");
       }
-    } catch {
-      setError("Connection error");
-    }
-    setLoading(false);
+      setLoading(false);
+    }, 300);
   };
 
   return (

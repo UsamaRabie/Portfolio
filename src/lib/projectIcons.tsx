@@ -18,6 +18,7 @@ import {
   FiHeart, FiLock, FiUnlock, FiDownload, FiUpload, FiRefreshCw,
   FiSearch, FiMenu, FiGrid, FiList, FiTrello, FiSlack, FiDollarSign,
   FiCreditCard, FiTrendingUp, FiActivity, FiCompass, FiTarget,
+  FiBookOpen,
 } from "react-icons/fi";
 import {
   MdStore, MdRestaurant, MdSchool, MdLocalHospital, MdFlight,
@@ -26,6 +27,8 @@ import {
   MdPalette, MdArchitecture, MdEngineering, MdAnalytics, MdHub,
   MdCloudQueue, MdDevices, MdShare, MdLanguage, MdHandshake,
   MdEmojiEvents, MdRocket, MdLightbulb, MdGroups, MdPublic,
+  MdMenuBook, MdLocalLibrary, MdCastForEducation, MdLibraryBooks,
+  MdBookOnline, MdBook,
 } from "react-icons/md";
 
 export const projectIconRegistry: Record<string, IconType> = {
@@ -89,6 +92,13 @@ export const projectIconRegistry: Record<string, IconType> = {
   Film: FiFilm,
   Music: FiMusic,
   Book: FiBook,
+  BookOpen: FiBookOpen,
+  MenuBook: MdMenuBook,
+  LocalLibrary: MdLocalLibrary,
+  LibraryBooks: MdLibraryBooks,
+  BookOnline: MdBookOnline,
+  BookMd: MdBook,
+  CastForEducation: MdCastForEducation,
   Map: FiMap,
   Calendar: FiCalendar,
   Users: FiUsers,

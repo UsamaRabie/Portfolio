@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { PortfolioData, Project, Skill, SocialLink, Fact } from "@/types";
-import { getDefaultData, savePortfolioData } from "@/lib/data";
+import { getDefaultData } from "@/lib/data";
 import ImageUploader from "@/components/ImageUploader";
 import { iconList } from "@/lib/icons";
 import { projectIconList } from "@/lib/projectIcons";
@@ -49,14 +49,9 @@ export default function DashboardPage() {
     }
   }, []);
 
-  const persist = useCallback(async (newData: PortfolioData) => {
+  const persist = useCallback((newData: PortfolioData) => {
     setData(newData);
     localStorage.setItem("portfolio_data", JSON.stringify(newData));
-    try {
-      await savePortfolioData(newData);
-    } catch {
-      showToast("error", "Failed to save");
-    }
   }, []);
 
   const update = useCallback(<K extends keyof PortfolioData>(section: K, value: PortfolioData[K]) => {

@@ -233,7 +233,8 @@
       "image": "/images/food-app.jpg",
       "category": "web",
       "demoUrl": "https://food-order-app-virid-rho.vercel.app/",
-      "githubUrl": "#"
+      "githubUrl": "#",
+      "icon": "Restaurant"
     },
     {
       "id": "ecommerce",
@@ -242,7 +243,8 @@
       "image": "/images/ecommerce.jpg",
       "category": "web",
       "demoUrl": "https://e-commerce-7ac98.web.app/",
-      "githubUrl": "#"
+      "githubUrl": "#",
+      "icon": "Store"
     },
     {
       "id": "instatech",
@@ -251,7 +253,8 @@
       "image": "/images/instatech.jpg",
       "category": "web",
       "demoUrl": "https://instatech36.github.io/",
-      "githubUrl": "#"
+      "githubUrl": "#",
+      "icon": "Monitor"
     },
     {
       "id": "social-media",
@@ -260,7 +263,8 @@
       "image": "/images/social-media.jpg",
       "category": "web",
       "demoUrl": "https://ubiquitous-pithivier-a40e60.netlify.app/",
-      "githubUrl": "#"
+      "githubUrl": "#",
+      "icon": "Users"
     },
     {
       "id": "movie-app",
@@ -269,7 +273,8 @@
       "image": "/images/movie-app.jpg",
       "category": "web",
       "demoUrl": "https://splendorous-medovik-24c858.netlify.app/",
-      "githubUrl": "#"
+      "githubUrl": "#",
+      "icon": "Movie"
     },
     {
       "id": "cart-app",
@@ -278,7 +283,8 @@
       "image": "/images/cart-app.jpg",
       "category": "web",
       "demoUrl": "https://main--tranquil-profiterole-9852d2.netlify.app/",
-      "githubUrl": "#"
+      "githubUrl": "#",
+      "icon": "Cart"
     },
     {
       "id": "product-management",
@@ -287,7 +293,8 @@
       "image": "/images/product-management.jpg",
       "category": "web",
       "demoUrl": "https://usamarabie.github.io/Product-management-system/",
-      "githubUrl": "#"
+      "githubUrl": "#",
+      "icon": "Settings"
     },
     {
       "id": "bootstrap-market",
@@ -296,7 +303,8 @@
       "image": "/images/bootstrap-market.jpg",
       "category": "web",
       "demoUrl": "https://usamarabie.github.io/Bootstrap_Market/",
-      "githubUrl": "#"
+      "githubUrl": "#",
+      "icon": "Bootstrap"
     }
   ],
   "contact": {
