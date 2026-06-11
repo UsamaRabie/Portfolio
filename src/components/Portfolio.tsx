@@ -9,6 +9,10 @@ interface PortfolioProps {
   projects: Project[];
 }
 
+function hasUrl(url?: string) {
+  return url && url !== "#" && url.length > 0;
+}
+
 function ProjectIcon({ project }: { project: Project }) {
   const IconComponent = project.icon ? projectIconRegistry[project.icon] : null;
   if (IconComponent) return <IconComponent size={64} className="text-indigo-400/60" />;
@@ -63,7 +67,7 @@ export default function Portfolio({ projects }: PortfolioProps) {
               <div className="aspect-video flex items-center justify-center relative overflow-hidden" style={{ background: "var(--card)" }}>
                 <ProjectIcon project={project} />
                 <div className="absolute inset-0 bg-gradient-to-t from-indigo-500/90 via-indigo-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-center pb-5 gap-3">
-                  {project.demoUrl && (
+                  {hasUrl(project.demoUrl) && (
                     <a
                       href={project.demoUrl}
                       target="_blank"
@@ -73,7 +77,7 @@ export default function Portfolio({ projects }: PortfolioProps) {
                       <ExternalLink size={14} /> Live Demo
                     </a>
                   )}
-                  {project.githubUrl && (
+                  {hasUrl(project.githubUrl) && (
                     <a
                       href={project.githubUrl}
                       target="_blank"

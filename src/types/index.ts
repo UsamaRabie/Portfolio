@@ -64,6 +64,7 @@ export interface PortfolioData {
   activities: string[];
   facts: Fact[];
   skills: Skill[];
+  skillCategories?: string[];
   resume: {
     summary: { title: string; items: string[] };
     education: ResumeSection;

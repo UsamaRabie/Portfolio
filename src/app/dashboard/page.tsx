@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { PortfolioData, Project, Skill, SocialLink, Fact } from "@/types";
 import { getDefaultData } from "@/lib/data";
 import ImageUploader from "@/components/ImageUploader";
-import { iconList } from "@/lib/icons";
-import { projectIconList } from "@/lib/projectIcons";
+import { iconList, iconRegistry } from "@/lib/icons";
+import { projectIconList, projectIconRegistry } from "@/lib/projectIcons";
 import Modal from "@/components/dashboard/Modal";
 import ConfirmDialog from "@/components/dashboard/ConfirmDialog";
 import ToastContainer, { showToast } from "@/components/dashboard/Toast";
 import ThemeToggle from "@/components/ThemeToggle";
+import SortableList from "@/components/dashboard/DnDSortable";
 import {
   LogOut, Plus, Trash2, Edit3, Menu,
   User, Globe, Award, Wrench, FileText, Folder, Mail,
@@ -28,7 +29,17 @@ const tabs = [
   { id: "contact", label: "Contact", icon: Mail },
 ];
 
-const SKILL_CATEGORIES = ["mern", "frontend", "backend", "programming"];
+const CATEGORY_COLORS: Record<string, string> = {
+  mern: "#6366f1",
+  frontend: "#06b6d4",
+  backend: "#10b981",
+  programming: "#f59e0b",
+};
+
+function getCatColor(cat: string, idx: number): string {
+  const palette = ["#6366f1", "#06b6d4", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6", "#14b8a6", "#f97316"];
+  return CATEGORY_COLORS[cat] || palette[idx % palette.length];
+}
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -174,8 +185,8 @@ function PersonalSection({ data, persist }: { data: PortfolioData; persist: (d: 
       <Modal open={open} onClose={() => setOpen(false)} title="Edit Personal Info">
         <div className="space-y-4">
           <ImageUploader value={form.profileImage} onChange={(url) => setForm((f) => ({ ...f, profileImage: url }))} label="Profile Image" />
-          {["name", "title", "email", "phone", "location", "birthday", "degree", "freelance", "cvUrl"].map((key) => (
-            <Field key={key} label={key.charAt(0).toUpperCase() + key.slice(1)}>
+          {[{key:"name"}, {key:"title"}, {key:"email"}, {key:"phone"}, {key:"location"}, {key:"birthday"}, {key:"degree"}, {key:"freelance", label:"Working Remotely"}, {key:"cvUrl", label:"CV URL"}].map(({key, label}) => (
+            <Field key={key} label={label || key.charAt(0).toUpperCase() + key.slice(1)}>
               <input type="text" value={(form as any)[key]} onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))} className="input" />
             </Field>
           ))}
@@ -359,11 +370,18 @@ function FactsSection({ data, update }: any) {
 
 function SkillsSection({ data, update }: any) {
   const items: Skill[] = data.skills;
+  const categories: string[] = data.skillCategories?.length ? data.skillCategories : [...new Set(items.map((s) => s.category))];
   const [editIdx, setEditIdx] = useState<number | null>(null);
-  const [form, setForm] = useState<Skill>({ name: "", level: 0, category: "", icon: undefined });
+  const [form, setForm] = useState<Skill>({ name: "", level: 0, category: categories[0] || "", icon: undefined });
   const [delIdx, setDelIdx] = useState<number | null>(null);
+  const [catRename, setCatRename] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
 
-  const openAdd = () => { setForm({ name: "", level: 0, category: "", icon: undefined }); setEditIdx(-1); };
+  const setCategories = (newCats: string[]) => {
+    update("skillCategories", newCats);
+  };
+
+  const openAdd = () => { setForm({ name: "", level: 0, category: categories[0] || "", icon: undefined }); setEditIdx(-1); };
   const openEdit = (i: number) => { setForm({ ...items[i] }); setEditIdx(i); };
   const saveItem = () => {
     const u = [...items];
@@ -380,35 +398,194 @@ function SkillsSection({ data, update }: any) {
     showToast("success", "Skill deleted");
   };
 
+  const addCategory = () => {
+    const name = `category-${categories.length + 1}`;
+    setCategories([...categories, name]);
+    showToast("success", `Category "${name}" added`);
+  };
+
+  const startRename = (old: string) => {
+    setCatRename(old);
+    setRenameValue(old);
+  };
+
+  const confirmRename = () => {
+    if (!catRename || !renameValue.trim()) return;
+    const newName = renameValue.trim();
+    if (newName === catRename) { setCatRename(null); return; }
+    setCategories(categories.map((c) => (c === catRename ? newName : c)));
+    update("skills", items.map((s) => (s.category === catRename ? { ...s, category: newName } : s)));
+    setCatRename(null);
+    showToast("success", "Category renamed");
+  };
+
+  const deleteCategory = (cat: string) => {
+    const count = items.filter((s) => s.category === cat).length;
+    if (count > 0) {
+      showToast("error", `Remove all ${count} skill(s) in "${cat}" first`);
+      return;
+    }
+    setCategories(categories.filter((c) => c !== cat));
+    showToast("success", `Category "${cat}" deleted`);
+  };
+
+  const moveCat = (idx: number, dir: -1 | 1) => {
+    const to = idx + dir;
+    if (to < 0 || to >= categories.length) return;
+    const updated = [...categories];
+    [updated[idx], updated[to]] = [updated[to], updated[idx]];
+    setCategories(updated);
+  };
+
+  const grouped = categories.reduce((acc, cat) => {
+    const filtered = items.filter((s) => s.category === cat);
+    if (filtered.length) acc[cat] = filtered;
+    return acc;
+  }, {} as Record<string, Skill[]>);
+
   return (
-    <SectionCard title="Skills" icon={Wrench} onAdd={openAdd}>
-      <div className="space-y-2">
-        {items.map((s, i) => (
-          <ItemRow key={i} label={`${s.name} (${s.category})`} onEdit={() => openEdit(i)} onDelete={() => setDelIdx(i)} />
-        ))}
+    <SectionCard title="Skills" icon={Wrench}>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <p className="text-xs" style={{ color: "var(--text-muted)" }}>{items.length} skills in {categories.length} categories</p>
+          <button onClick={addCategory} className="flex items-center gap-1 text-indigo-500 hover:text-indigo-600 text-xs font-medium">
+            <Plus size={14} /> Add Category
+          </button>
+        </div>
+
+        {categories.map((cat, catIdx) => {
+          const catColor = getCatColor(cat, catIdx);
+          const catItems = grouped[cat] || [];
+          return (
+            <div key={cat} className="rounded-xl border p-4" style={{ borderColor: "var(--border)" }}>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-5 rounded-full" style={{ background: catColor }} />
+                  {catRename === cat ? (
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="text" value={renameValue} autoFocus
+                        onChange={(e) => setRenameValue(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") confirmRename(); if (e.key === "Escape") setCatRename(null); }}
+                        className="input text-sm font-bold py-0.5 px-2 w-40"
+                      />
+                      <button onClick={confirmRename} className="text-indigo-500 text-xs font-medium hover:underline">Save</button>
+                      <button onClick={() => setCatRename(null)} className="text-gray-400 text-xs hover:underline">Cancel</button>
+                    </div>
+                  ) : (
+                    <>
+                      <h4 className="text-sm font-bold capitalize" style={{ color: "var(--heading)" }}>{cat}</h4>
+                      <span className="text-xs px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500">{items.filter((s) => s.category === cat).length}</span>
+                    </>
+                  )}
+                </div>
+                <div className="flex items-center gap-0.5">
+                  {catIdx > 0 && <button onClick={() => moveCat(catIdx, -1)} className="p-1 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800" title="Move up"><ChevronLeft size={14} className="rotate-90" /></button>}
+                  {catIdx < categories.length - 1 && <button onClick={() => moveCat(catIdx, 1)} className="p-1 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800" title="Move down"><ChevronLeft size={14} className="-rotate-90" /></button>}
+                  <button onClick={() => startRename(cat)} className="p-1 rounded text-gray-400 hover:text-indigo-500 hover:bg-gray-100 dark:hover:bg-gray-800" title="Rename"><Edit3 size={14} /></button>
+                  <button onClick={() => deleteCategory(cat)} className="p-1 rounded text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20" title="Delete category"><Trash2 size={14} /></button>
+                  <button onClick={openAdd} className="p-1 rounded text-gray-400 hover:text-indigo-500 hover:bg-gray-100 dark:hover:bg-gray-800" title="Add skill to this category"><Plus size={14} /></button>
+                </div>
+              </div>
+
+              <SortableList
+                items={catItems}
+                onChange={(reordered) => {
+                  const others = items.filter((s) => s.category !== cat);
+                  const all = [...others, ...reordered];
+                  const ordered = categories.flatMap((c) => all.filter((s) => s.category === c));
+                  update("skills", ordered);
+                }}
+                getKey={(s) => s.name}
+                getLabel={(s) => s.name}
+                onEdit={(i) => openEdit(items.indexOf(catItems[i]))}
+                onDelete={(i) => setDelIdx(items.indexOf(catItems[i]))}
+              />
+
+              {catItems.length === 0 && (
+                <p className="text-xs text-center py-4" style={{ color: "var(--text-muted)" }}>
+                  No skills in "{cat}". Click + to add one.
+                </p>
+              )}
+            </div>
+          );
+        })}
+
+        {categories.length === 0 && (
+          <div className="text-center py-10">
+            <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>No categories yet. Create your first one!</p>
+            <button onClick={addCategory} className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors">
+              + Create Category
+            </button>
+          </div>
+        )}
       </div>
 
       <Modal open={editIdx !== null} onClose={() => setEditIdx(null)} title={editIdx === -1 ? "Add Skill" : "Edit Skill"}>
-        <div className="space-y-4">
+        <div className="space-y-5">
+          <div className="flex items-center gap-4 p-4 rounded-2xl" style={{ background: "var(--background)" }}>
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
+              style={{ background: `${getCatColor(form.category, categories.indexOf(form.category))}15`, color: getCatColor(form.category, categories.indexOf(form.category)) }}>
+              {form.icon ? (() => { const Ic = iconRegistry[form.icon]; return Ic ? <Ic size={28} /> : <span>{form.name[0]}</span>; })() : <span>{form.name[0] || "?"}</span>}
+            </div>
+            <div>
+              <p className="text-sm font-bold" style={{ color: "var(--heading)" }}>{form.name || "Skill Name"}</p>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>{form.category || "category"}</p>
+            </div>
+          </div>
+
           <Field label="Name">
             <input type="text" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="input" />
           </Field>
+
           <Field label="Category">
-            <select value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} className="input">
-              <option value="">Select category</option>
-              {SKILL_CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((cat, i) => (
+                <button
+                  key={cat}
+                  onClick={() => setForm((f) => ({ ...f, category: cat }))}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                    form.category === cat
+                      ? "text-white shadow-sm"
+                      : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 border"
+                  }`}
+                  style={form.category === cat ? { background: getCatColor(cat, i) } : { borderColor: "var(--border)" }}
+                >
+                  {cat}
+                </button>
               ))}
-            </select>
+            </div>
           </Field>
+
           <Field label="Icon">
-            <select value={form.icon || ""} onChange={(e) => setForm((f) => ({ ...f, icon: e.target.value || undefined }))} className="input">
-              <option value="">Auto icon</option>
-              {iconList.map((icon) => (
-                <option key={icon} value={icon}>{icon}</option>
-              ))}
-            </select>
+            <div className="grid grid-cols-8 gap-1.5 max-h-40 overflow-y-auto p-2 rounded-xl border" style={{ borderColor: "var(--border)" }}>
+              <button
+                onClick={() => setForm((f) => ({ ...f, icon: undefined }))}
+                className={`p-2 rounded-lg flex items-center justify-center text-xs transition-all ${
+                  !form.icon ? "ring-2 ring-indigo-500 bg-indigo-50 dark:bg-indigo-500/10" : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+                title="Auto icon"
+              >
+                Auto
+              </button>
+              {iconList.map((icon) => {
+                const Ic = iconRegistry[icon];
+                return (
+                  <button
+                    key={icon}
+                    onClick={() => setForm((f) => ({ ...f, icon }))}
+                    className={`p-2 rounded-lg flex items-center justify-center transition-all ${
+                      form.icon === icon ? "ring-2 ring-indigo-500 bg-indigo-50 dark:bg-indigo-500/10" : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                    }`}
+                    title={icon}
+                  >
+                    {Ic ? <Ic size={16} /> : <span className="text-[10px]">{icon.slice(0, 2)}</span>}
+                  </button>
+                );
+              })}
+            </div>
           </Field>
+
           <SaveBtn onClick={saveItem} />
         </div>
       </Modal>
@@ -431,7 +608,7 @@ function ResumeSection({ data, update }: any) {
   const setResume = (v: any) => update("resume", v);
 
   const [editTarget, setEditTarget] = useState<{ section: string; idx: number } | null>(null);
-  const [editType, setEditType] = useState<"title" | "item" | "desc">("item");
+  const [editType, setEditType] = useState<"title" | "item" | "summaryItem">("item");
   const [form, setForm] = useState<any>(null);
   const [delTarget, setDelTarget] = useState<{ section: string; idx: number } | null>(null);
 
@@ -441,6 +618,12 @@ function ResumeSection({ data, update }: any) {
     setForm({ value: (resume as any)[section].title });
   };
   const openEditItem = (section: string, idx: number) => {
+    if (section === "summary") {
+      setEditType("summaryItem");
+      setEditTarget({ section, idx });
+      setForm({ value: (resume as any)[section].items[idx] });
+      return;
+    }
     setEditType("item");
     setEditTarget({ section, idx });
     setForm({ ...(resume as any)[section].items[idx] });
@@ -450,6 +633,7 @@ function ResumeSection({ data, update }: any) {
     const { section, idx } = editTarget;
     const sec = { ...(resume as any)[section] };
     if (editType === "title") sec.title = form.value;
+    else if (editType === "summaryItem") sec.items[idx] = form.value;
     else sec.items[idx] = form;
     setResume({ ...resume, [section]: sec });
     setEditTarget(null);
@@ -482,9 +666,14 @@ function ResumeSection({ data, update }: any) {
         <div>
           <h4 className="text-sm font-semibold mb-2" style={{ color: "var(--heading)" }}>Summary</h4>
           <ItemRow label={resume.summary.title} onEdit={() => openEditTitle("summary")} />
-          {resume.summary.items.map((item: string, i: number) => (
-            <ItemRow key={i} label={item} onDelete={() => setDelTarget({ section: "summary", idx: i })} />
-          ))}
+          <SortableList
+            items={resume.summary.items}
+            onChange={(reordered) => setResume({ ...resume, summary: { ...resume.summary, items: reordered } })}
+            getKey={(_item: string, i: number) => `summary-${i}`}
+            getLabel={(item: string) => item || "(empty)"}
+            onEdit={(i) => openEditItem("summary", i)}
+            onDelete={(i) => setDelTarget({ section: "summary", idx: i })}
+          />
           <AddBtn label="Add Summary Item" onClick={() => {
             const sec = { ...resume.summary };
             sec.items = [...sec.items, ""];
@@ -495,6 +684,9 @@ function ResumeSection({ data, update }: any) {
 
         {sectionList.map(({ key, label }) => {
           const sec = resume[key];
+          const moveItem = (reordered: any[]) => {
+            setResume({ ...resume, [key]: { ...sec, items: reordered } });
+          };
           return (
             <div key={key}>
               <div className="flex items-center justify-between mb-2">
@@ -502,9 +694,14 @@ function ResumeSection({ data, update }: any) {
                 <button onClick={() => openEditTitle(key)} className="text-indigo-500 text-xs hover:underline">Edit title</button>
               </div>
               <ItemRow label={sec.title} />
-              {sec.items.map((item: any, i: number) => (
-                <ItemRow key={i} label={`${item.institution || "Untitled"} (${item.period})`} onEdit={() => openEditItem(key, i)} onDelete={() => setDelTarget({ section: key, idx: i })} />
-              ))}
+              <SortableList
+                items={sec.items}
+                onChange={moveItem}
+                getKey={(_item: any, i: number) => `${key}-${i}`}
+                getLabel={(item: any) => `${item.institution || "Untitled"} (${item.period})`}
+                onEdit={(i) => openEditItem(key, i)}
+                onDelete={(i) => setDelTarget({ section: key, idx: i })}
+              />
               <AddBtn label={`Add ${label} Item`} onClick={() => addItem(key)} />
             </div>
           );
@@ -513,8 +710,8 @@ function ResumeSection({ data, update }: any) {
 
       <Modal open={editTarget !== null} onClose={() => setEditTarget(null)} title="Edit">
         <div className="space-y-4">
-          {editType === "title" ? (
-            <Field label="Title">
+          {editType === "title" || editType === "summaryItem" ? (
+            <Field label={editType === "title" ? "Title" : "Item"}>
               <input type="text" value={form?.value || ""} onChange={(e) => setForm((f: any) => ({ ...f, value: e.target.value }))} className="input" />
             </Field>
           ) : (
@@ -570,24 +767,64 @@ function ProjectsSection({ data, update }: any) {
     showToast("success", "Project deleted");
   };
 
+  const moveProject = (reordered: Project[]) => {
+    update("projects", reordered);
+  };
+
+  const IconComp = form.icon ? projectIconRegistry[form.icon] : null;
+
   return (
     <SectionCard title="Projects" icon={Folder} onAdd={openAdd}>
-      <div className="space-y-2">
-        {items.map((p, i) => (
-          <ItemRow key={p.id} label={p.title || "Untitled"} onEdit={() => openEdit(i)} onDelete={() => setDelIdx(i)} />
-        ))}
-      </div>
+      <SortableList
+        items={items}
+        onChange={moveProject}
+        getKey={(p, i) => p.id || `p-${i}`}
+        getLabel={(p) => p.title || "Untitled"}
+        onEdit={openEdit}
+        onDelete={(i) => setDelIdx(i)}
+      />
 
       <Modal open={editIdx !== null} onClose={() => setEditIdx(null)} title={editIdx === -1 ? "Add Project" : "Edit Project"}>
-        <div className="space-y-4">
+        <div className="space-y-5">
+          <div className="flex items-center gap-4 p-4 rounded-2xl" style={{ background: "var(--background)" }}>
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl bg-indigo-500/10 text-indigo-400">
+              {IconComp ? <IconComp size={28} /> : <span className="text-lg font-bold">{form.title[0] || "?"}</span>}
+            </div>
+            <div>
+              <p className="text-sm font-bold" style={{ color: "var(--heading)" }}>{form.title || "Project Title"}</p>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>{form.category}</p>
+            </div>
+          </div>
+
           <Field label="Icon">
-            <select value={form.icon || ""} onChange={(e) => setForm((f) => ({ ...f, icon: e.target.value || undefined }))} className="input">
-              <option value="">No icon</option>
-              {projectIconList.map((icon) => (
-                <option key={icon} value={icon}>{icon}</option>
-              ))}
-            </select>
+            <div className="grid grid-cols-8 gap-1.5 max-h-48 overflow-y-auto p-2 rounded-xl border" style={{ borderColor: "var(--border)" }}>
+              <button
+                onClick={() => setForm((f) => ({ ...f, icon: undefined }))}
+                className={`p-2 rounded-lg flex items-center justify-center text-xs transition-all ${
+                  !form.icon ? "ring-2 ring-indigo-500 bg-indigo-50 dark:bg-indigo-500/10" : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+                title="No icon"
+              >
+                None
+              </button>
+              {projectIconList.map((name) => {
+                const Ic = projectIconRegistry[name];
+                return (
+                  <button
+                    key={name}
+                    onClick={() => setForm((f) => ({ ...f, icon: name }))}
+                    className={`p-2 rounded-lg flex items-center justify-center transition-all ${
+                      form.icon === name ? "ring-2 ring-indigo-500 bg-indigo-50 dark:bg-indigo-500/10" : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                    }`}
+                    title={name}
+                  >
+                    {Ic ? <Ic size={16} /> : <span className="text-[10px]">{name.slice(0, 2)}</span>}
+                  </button>
+                );
+              })}
+            </div>
           </Field>
+
           {["title", "description", "category", "demoUrl", "githubUrl"].map((field) => (
             <Field key={field} label={field.charAt(0).toUpperCase() + field.slice(1)}>
               <input type="text" value={(form as any)[field]} onChange={(e) => setForm((f) => ({ ...f, [field]: e.target.value }))} className="input" />

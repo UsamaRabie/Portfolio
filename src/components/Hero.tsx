@@ -5,11 +5,12 @@ import { ArrowDown } from "lucide-react";
 
 interface HeroProps {
   name: string;
+  title: string;
   subtitle: string[];
   profileImage: string;
 }
 
-export default function Hero({ name, subtitle, profileImage }: HeroProps) {
+export default function Hero({ name, title, subtitle, profileImage }: HeroProps) {
   const [text, setText] = useState("");
   const [idx, setIdx] = useState(0);
   const [charIdx, setCharIdx] = useState(0);
@@ -70,7 +71,7 @@ export default function Hero({ name, subtitle, profileImage }: HeroProps) {
             color: "var(--color-primary)",
           }}
         >
-          MERN Stack Developer &amp; Web Developer
+          {title}
         </div>
 
         <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold mb-6 leading-[1.1]">

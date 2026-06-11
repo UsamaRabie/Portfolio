@@ -7,6 +7,7 @@ import { VscJson } from "react-icons/vsc";
 
 interface SkillsProps {
   skills: Skill[];
+  skillCategories?: string[];
 }
 
 const getSkillIcon = (skill: Skill) => {
@@ -29,7 +30,7 @@ const getSkillIcon = (skill: Skill) => {
   return <VscJson size={28} />;
 };
 
-export default function Skills({ skills }: SkillsProps) {
+export default function Skills({ skills, skillCategories }: SkillsProps) {
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -42,7 +43,9 @@ export default function Skills({ skills }: SkillsProps) {
     return () => observer.disconnect();
   }, []);
 
-  const categories = [...new Set(skills.map((s) => s.category))];
+  const categories = skillCategories?.length
+    ? skillCategories.filter((c) => skills.some((s) => s.category === c))
+    : [...new Set(skills.map((s) => s.category))];
 
   return (
     <section id="skills" className="py-24 relative overflow-hidden" style={{ background: "var(--background)" }}>
