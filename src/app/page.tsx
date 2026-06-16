@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { PortfolioData } from "@/types";
-import { getDefaultData } from "@/lib/data";
+import { getDefaultData, fetchPortfolioData } from "@/lib/data";
 import Sidebar from "@/components/Sidebar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -16,10 +16,17 @@ export default function Home() {
   const [data, setData] = useState<PortfolioData>(getDefaultData());
 
   useEffect(() => {
-    const saved = localStorage.getItem("portfolio_data");
-    if (saved) {
-      try { setData(JSON.parse(saved)); } catch { /* ignore */ }
-    }
+    fetchPortfolioData().then((apiData) => {
+      if (apiData) {
+        setData(apiData);
+        localStorage.setItem("portfolio_data", JSON.stringify(apiData));
+      } else {
+        const saved = localStorage.getItem("portfolio_data");
+        if (saved) {
+          try { setData(JSON.parse(saved)); } catch { /* ignore */ }
+        }
+      }
+    });
   }, []);
 
   return (
