@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { PortfolioData, Project, Skill, SocialLink, Fact } from "@/types";
-import { getDefaultData, savePortfolioData } from "@/lib/data";
+import { getDefaultData, fetchPortfolioData, savePortfolioData } from "@/lib/data";
+import { onAuthChange, logout } from "@/lib/auth";
 import ImageUploader from "@/components/ImageUploader";
 import { iconList, iconRegistry } from "@/lib/icons";
 import { projectIconList, projectIconRegistry } from "@/lib/projectIcons";
@@ -48,16 +49,24 @@ export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
-    const auth = localStorage.getItem("dashboard_auth");
-    if (auth !== "authenticated") router.push("/dashboard/login");
+    const unsub = onAuthChange((user) => {
+      if (!user) router.push("/dashboard/login");
+    });
+    return () => unsub();
   }, [router]);
 
   useEffect(() => {
-    const savedData = localStorage.getItem("portfolio_data");
-    if (savedData) {
-      try { setData(JSON.parse(savedData)); }
-      catch { /* ignore */ }
-    }
+    fetchPortfolioData().then((apiData) => {
+      if (apiData) {
+        setData(apiData);
+        localStorage.setItem("portfolio_data", JSON.stringify(apiData));
+      } else {
+        const saved = localStorage.getItem("portfolio_data");
+        if (saved) {
+          try { setData(JSON.parse(saved)); } catch { /* ignore */ }
+        }
+      }
+    });
   }, []);
 
   const persist = useCallback((newData: PortfolioData) => {
@@ -70,8 +79,8 @@ export default function DashboardPage() {
     persist({ ...data, [section]: value });
   }, [data, persist]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("dashboard_auth");
+  const handleLogout = async () => {
+    await logout();
     router.push("/dashboard/login");
   };
 

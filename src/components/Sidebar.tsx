@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { Menu, Download, Home, User, Wrench, FileText, Folder, Mail } from "lucide-react";
 import { SocialLink } from "@/types";
 import ThemeToggle from "./ThemeToggle";
@@ -88,7 +89,7 @@ export default function Sidebar({ name, social, cvUrl, profileImage }: SidebarPr
 
           <div className="flex-1 px-4 overflow-y-auto">
             {navItems.map(({ label, href, icon: Icon }) => (
-              <a
+              <Link
                 key={href}
                 href={href}
                 onClick={close}
@@ -99,7 +100,7 @@ export default function Sidebar({ name, social, cvUrl, profileImage }: SidebarPr
               >
                 <Icon size={16} />
                 {label}
-              </a>
+              </Link>
             ))}
           </div>
 

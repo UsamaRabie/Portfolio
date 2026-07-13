@@ -2,10 +2,13 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Lock, LogIn } from "lucide-react";
+import { login } from "@/lib/auth";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,15 +18,14 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    setTimeout(() => {
-      if (password === "rsmuf72101512") {
-        localStorage.setItem("dashboard_auth", "authenticated");
-        router.push("/dashboard");
-      } else {
-        setError("Invalid password");
-      }
+    try {
+      await login(email, password);
+      router.push("/dashboard");
+    } catch {
+      setError("Invalid email or password");
+    } finally {
       setLoading(false);
-    }, 300);
+    }
   };
 
   return (
@@ -34,18 +36,29 @@ export default function LoginPage() {
             <Lock size={32} className="text-primary" />
           </div>
           <h1 className="text-2xl font-bold text-white">Dashboard Login</h1>
-          <p className="text-gray-400 mt-2">Enter password to access the dashboard</p>
+          <p className="text-gray-400 mt-2">Enter your credentials to access the dashboard</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              className="w-full px-4 py-3 rounded-lg bg-white/10 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              autoFocus
+              required
+            />
+          </div>
+          <div>
+            <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
+              placeholder="Password"
               className="w-full px-4 py-3 rounded-lg bg-white/10 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              autoFocus
+              required
             />
           </div>
 
@@ -64,9 +77,9 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-8 text-center">
-          <a href="/" className="text-primary hover:text-primary-dark text-sm transition-colors">
+          <Link href="/" className="text-primary hover:text-primary-dark text-sm transition-colors">
             ← Back to Portfolio
-          </a>
+          </Link>
         </div>
       </div>
     </div>
